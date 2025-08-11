@@ -1,6 +1,8 @@
 package organisation.structure.exercise.view;
 
 import organisation.structure.exercise.model.AnalysisResult;
+import organisation.structure.exercise.model.OrganizationalSummary;
+import organisation.structure.exercise.view.IOrganizationalAnalysisView;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class ConsoleOrganizationalAnalysisView implements IOrganizationalAnalysisView {
     
     @Override
-    public void displayAnalysisResult(AnalysisResult result) {
+    public void displayAnalysisResults(AnalysisResult result) {
         if (result.isSuccess()) {
             System.out.println("=== ANALYSIS COMPLETED SUCCESSFULLY ===");
             
@@ -37,8 +39,15 @@ public class ConsoleOrganizationalAnalysisView implements IOrganizationalAnalysi
     }
     
     @Override
-    public void displayUsageInstructions(String instructions) {
-        System.out.println(instructions);
+    public void displayOrganizationalSummary(OrganizationalSummary summary) {
+        System.out.println("\n=== ORGANIZATIONAL SUMMARY ===");
+        System.out.printf("CEO: %s (ID: %s)%n", 
+            summary.getCeo().getFullName(), summary.getCeo().getId());
+        System.out.printf("Total Employees: %d%n", summary.getTotalEmployees());
+        System.out.printf("Managers: %d%n", summary.getManagers());
+        System.out.printf("Individual Contributors: %d%n", summary.getIndividualContributors());
+        System.out.printf("Total Salary Budget: $%.2f%n", summary.getTotalSalaryBudget());
+        System.out.printf("Average Salary: $%.2f%n", summary.getAverageSalary());
     }
     
     @Override
@@ -51,16 +60,12 @@ public class ConsoleOrganizationalAnalysisView implements IOrganizationalAnalysi
         System.out.println("SUCCESS: " + message);
     }
     
-    private void displayOrganizationalSummary(organisation.structure.exercise.model.OrganizationalSummary summary) {
-        System.out.println("\n=== ORGANIZATIONAL SUMMARY ===");
-        System.out.printf("CEO: %s (ID: %s)%n", 
-            summary.getCeo().getFullName(), summary.getCeo().getId());
-        System.out.printf("Total Employees: %d%n", summary.getTotalEmployees());
-        System.out.printf("Managers: %d%n", summary.getManagers());
-        System.out.printf("Individual Contributors: %d%n", summary.getIndividualContributors());
-        System.out.printf("Total Salary Budget: $%.2f%n", summary.getTotalSalaryBudget());
-        System.out.printf("Average Salary: $%.2f%n", summary.getAverageSalary());
+    @Override
+    public void displayInfo(String message) {
+        System.out.println("INFO: " + message);
     }
+    
+
     
     private void displayUnderpaidManagers(java.util.List<organisation.structure.exercise.model.Employee> managers) {
         System.out.println("\n=== MANAGER SALARY ANALYSIS ===");

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +38,10 @@ public class EmployeeValidationUtil {
         
         // Check for valid employee data
         for (Employee employee : employees) {
+            if (employee == null) {
+                log.warn("Null employee found in list");
+                return false;
+            }
             if (!isValidEmployee(employee)) {
                 log.warn("Invalid employee data found: {}", employee.getId());
                 return false;
@@ -98,6 +103,7 @@ public class EmployeeValidationUtil {
      */
     public static boolean hasDuplicateIds(List<Employee> employees) {
         Map<String, Long> idCounts = employees.stream()
+                .filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(Employee::getId, Collectors.counting()));
         
         return idCounts.values().stream().anyMatch(count -> count > 1);

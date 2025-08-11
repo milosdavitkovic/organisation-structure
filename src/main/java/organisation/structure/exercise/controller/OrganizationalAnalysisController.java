@@ -20,6 +20,13 @@ public class OrganizationalAnalysisController implements IOrganizationalAnalysis
     private IOrganizationalAnalysisView view;
     
     @Override
+    public void startAnalysis() {
+        // This method will be called when the application starts
+        // It can be used to initialize the analysis process
+        view.displayInfo("Organizational Analysis System Started");
+    }
+    
+    @Override
     public AnalysisResult analyzeOrganization(String csvFilePath) {
         try {
             // Delegate the analysis to the service layer
@@ -31,7 +38,7 @@ public class OrganizationalAnalysisController implements IOrganizationalAnalysis
             AnalysisResult result = AnalysisResult.success(null, null, null, null);
             
             // Display the results using the view
-            view.displayAnalysisResult(result);
+            view.displayAnalysisResults(result);
             
             return result;
             
@@ -43,7 +50,7 @@ public class OrganizationalAnalysisController implements IOrganizationalAnalysis
     }
     
     @Override
-    public String getUsageInstructions() {
+    public void getUsageInstructions() {
         String instructions = """
             Usage: java -jar exercise.jar <path-to-csv-file>
             Example: java -jar exercise.jar employees.csv
@@ -58,8 +65,6 @@ public class OrganizationalAnalysisController implements IOrganizationalAnalysis
             """;
         
         // Display the instructions using the view
-        view.displayUsageInstructions(instructions);
-        
-        return instructions;
+        view.displayInfo(instructions);
     }
 }

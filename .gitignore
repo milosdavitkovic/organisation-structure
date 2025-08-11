@@ -57,3 +57,5 @@ build/
 .vscode/
 
 *.py
+
+*.bak
