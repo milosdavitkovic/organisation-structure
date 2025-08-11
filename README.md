@@ -1,168 +1,203 @@
-# Organizational Structure Analysis
+# Organizational Structure Analyzer
 
-This application analyzes a company's organizational structure to identify potential improvements in management salary distribution and reporting line efficiency.
+A Spring Boot application that analyzes organizational structures from CSV data to identify potential improvements in management salary distribution and reporting line efficiency.
 
-## 🚀 Quick Start
+## Business Requirements
 
-```bash
-# Build the application
-mvn clean package
+BIG COMPANY wants to analyze its organizational structure and identify potential improvements:
 
-# Run analysis on your employee data
-java -jar target/exercise-0.0.1-SNAPSHOT.jar employees.csv
+1. **Manager Salary Analysis**: Ensure every manager earns at least 20% more than the average salary of their direct subordinates, but no more than 50% more than that average.
+
+2. **Reporting Line Analysis**: Identify all employees who have more than 4 managers between them and the CEO.
+
+3. **CSV Data Processing**: Handle up to 1000 employees efficiently.
+
+## Features
+
+- **CSV File Processing**: Read and validate employee data from CSV files
+- **Organizational Hierarchy Analysis**: Build and analyze reporting relationships
+- **Salary Analysis**: Identify underpaid and overpaid managers
+- **Reporting Line Analysis**: Find employees with too long reporting chains
+- **Memory Optimized**: Efficient processing for large datasets
+- **Comprehensive Logging**: Detailed logging using Lombok
+
+## Project Structure
+
+```
+src/main/java/organisation/structure/exercise/
+├── model/                          # Data models
+│   └── Employee.java              # Employee entity with business logic
+├── service/                        # Service layer
+│   ├── ICsvReaderService.java     # CSV reading interface
+│   ├── CsvReaderService.java      # CSV reading implementation
+│   └── csv/impl/                  # CSV service implementations
+├── controller/                     # Controller layer
+│   └── OrganizationalAnalysisController.java
+├── view/                          # View layer
+│   └── ConsoleOrganizationalAnalysisView.java
+├── util/                          # Utility classes
+│   ├── CsvValidationUtil.java
+│   └── EmployeeValidationUtil.java
+└── ExerciseApplication.java       # Main application
 ```
 
-## 📚 Documentation
+## Technology Stack
 
-**📖 [Complete Documentation](docs/README.md)** - Start here for comprehensive guides
+- **Java 21**
+- **Spring Boot 3.x**
+- **Maven**
+- **Lombok**
+- **JUnit 5**
+- **SLF4J** (Logging)
 
-### Quick Links
-- **[Quick Start Guide](docs/quick-start.md)** - Get up and running in minutes
-- **[User Guide](docs/user-guide.md)** - Complete usage instructions
-- **[Business Logic](docs/business-logic.md)** - Understanding analysis rules
-- **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
-- **[FAQ](docs/faq.md)** - Frequently asked questions
+## Getting Started
 
-### For Developers
-- **[Architecture Overview](docs/architecture.md)** - System design and components
-- **[Development Setup](docs/development.md)** - Development environment
-- **[API Reference](docs/api-reference.md)** - Technical documentation
+### Prerequisites
 
-## 🎯 Features
+- Java 21 or higher
+- Maven 3.6 or higher
 
-The application performs three main analyses:
+### Installation
 
-1. **Manager Salary Analysis**: Identifies managers who earn less than 20% more than their direct subordinates' average salary (underpaid) or more than 50% more than that average (overpaid).
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd organisation-structure
+```
 
-2. **Reporting Line Analysis**: Identifies employees who have more than 4 managers between them and the CEO (reporting line too long).
+2. Build the project:
+```bash
+mvn clean install
+```
 
-3. **Organizational Summary**: Provides an overview of the company structure including total employees, managers, and salary statistics.
+3. Run the application:
+```bash
+mvn spring-boot:run -- -Dspring.profiles.active=test
+```
 
-## 📊 CSV File Format
+### Usage
 
-The CSV file should have the following structure:
-
+1. Prepare a CSV file with employee data in the following format:
 ```csv
 Id,firstName,lastName,salary,managerId
 123,Joe,Doe,60000,
 124,Martin,Chekov,45000,123
 125,Bob,Ronstad,47000,123
-300,Alice,Hasacat,50000,124
-305,Brett,Hardleaf,34000,300
 ```
 
-**📖 [Detailed CSV Format Guide](docs/user-guide.md#csv-data-format)**
-
-## 📋 Sample Output
-
-```
-Reading employee data from: employees.csv
-Successfully loaded 15 employees.
-
-=== ORGANIZATIONAL SUMMARY ===
-CEO: Joe Doe (ID: 123)
-Total Employees: 15
-Managers: 8
-Individual Contributors: 7
-Total Salary Budget: $625000.00
-Average Salary: $41666.67
-
-=== MANAGER SALARY ANALYSIS ===
-⚠ UNDERPAID MANAGERS:
-  - Martin Chekov (ID: 124): Underpaid by $9600.00
-  - Bob Ronstad (ID: 125): Underpaid by $1600.00
-
-⚠ OVERPAID MANAGERS:
-  - Alice Hasacat (ID: 300): Overpaid by $2000.00
-
-=== REPORTING LINE ANALYSIS ===
-⚠ EMPLOYEES WITH TOO LONG REPORTING LINES:
-  - Amanda White (ID: 314): 1 levels too deep (Level 5)
-  - Daniel Harris (ID: 315): 1 levels too deep (Level 5)
-
-=== ANALYSIS COMPLETE ===
+2. Run the analysis:
+```bash
+java -jar target/exercise-0.0.1-SNAPSHOT.jar employees.csv
 ```
 
-## 🏗️ Architecture
+## Configuration
 
-The application is built using **Spring Boot 3.5.4** with a clean, layered architecture:
+The application supports multiple environment configurations:
 
-- **Employee Model**: Core business logic with salary analysis and reporting level calculations
-- **CsvReaderService**: Robust CSV file parsing with comprehensive error handling
-- **OrganizationalAnalyzerService**: Complete analysis engine for salary and reporting line analysis
-- **OrganizationalAnalysisService**: Orchestrates the entire analysis process
+- `application.properties` - Common configuration
+- `application-test.properties` - Test environment
+- `application-int.properties` - Integration environment  
+- `application-prod.properties` - Production environment
 
-**📖 [Detailed Architecture Documentation](docs/architecture.md)**
+### Key Configuration Properties
 
-## 🧪 Testing
+```properties
+# CSV Processing
+app.csv.batch-size=1000
+app.csv.max-file-size=10MB
+app.csv.encoding=UTF-8
+
+# Analysis Thresholds
+app.analysis.underpaid-threshold=1.2
+app.analysis.overpaid-threshold=1.5
+app.analysis.max-reporting-levels=4
+
+# Performance
+app.performance.thread-pool-size=4
+app.performance.async-processing-enabled=true
+```
+
+## Testing
+
+### Running Tests
 
 ```bash
 # Run all tests
 mvn test
 
-# Run with coverage
-mvn test jacoco:report
+# Run specific test class
+mvn test -Dtest=DefaultCsvReaderServiceTest
+
+# Run with specific profile
+mvn test -Dspring.profiles.active=test
 ```
 
-The comprehensive test suite covers:
-- Employee model validation
-- Organizational structure building
-- Reporting level calculations
-- Manager salary analysis
-- CSV file reading
-- Error handling scenarios
+### Test Data
 
-## 🔧 Requirements
+The project includes test data files:
+- `src/test/resources/test-data/employees.csv` - Sample employee data
+- `src/test/resources/test-data/large-employees.csv` - Large dataset for performance testing
+- `src/test/resources/test-data/empty.csv` - Empty file for edge case testing
 
-- **Java 21** or later
-- **Maven 3.6+**
-- **Minimum 512MB RAM** (1GB recommended)
+## Architecture
 
-## 🚨 Error Handling
+### Design Patterns
 
-The application provides robust error handling for:
-- Invalid CSV file format
-- Missing manager references
-- Invalid salary values
-- File not found errors
-- Organizational structure issues
+- **MVC Pattern**: Clear separation of Model, View, and Controller
+- **Interface Segregation**: Focused interfaces for specific responsibilities
+- **Dependency Injection**: Spring-based dependency management
+- **Facade Pattern**: Simplified interface for complex operations
 
-**📖 [Troubleshooting Guide](docs/troubleshooting.md)**
+### Service Layer
 
-## 📈 Performance
+The application follows a layered architecture:
 
-- **Scalability**: Designed for up to 1,000 employees
-- **Memory Usage**: Linear scaling with employee count
-- **Processing Time**: O(n) complexity for all operations
-- **Efficient Algorithms**: Optimized data structures and algorithms
+1. **Controller Layer**: Handles user interactions and workflow
+2. **Service Layer**: Contains business logic and data processing
+3. **Model Layer**: Data entities with business rules
+4. **View Layer**: Output formatting and display
 
-## 🔮 Future Enhancements
+### Memory Optimization
 
-Planned improvements include:
-- Web interface with REST API
-- Export functionality (PDF, Excel, JSON)
-- Configurable salary thresholds
-- Database integration
-- Historical analysis and trend tracking
-- Department-level analysis
-- Salary benchmarking against industry standards
-- Visualization of organizational charts
-- Docker containerization
+- **Batch Processing**: Process large datasets in manageable chunks
+- **Try-with-Resources**: Automatic resource management
+- **Stream Processing**: Efficient data processing with Java streams
+- **Memory Estimation**: Pre-calculation of memory requirements
 
-## 🤝 Contributing
+## Business Logic
 
-We welcome contributions! Please see our **[Contributing Guidelines](docs/contributing.md)** for details.
+### Salary Analysis
 
-## 📞 Support
+- **Underpaid Managers**: Earn less than 120% of average subordinate salary
+- **Overpaid Managers**: Earn more than 150% of average subordinate salary
+- **Calculation**: Based on direct subordinates only
 
-- **Documentation**: [Complete Documentation](docs/README.md)
-- **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions)
+### Reporting Line Analysis
 
-## 📄 License
+- **Maximum Levels**: 4 levels from CEO
+- **Excess Levels**: Any level beyond 4 is considered excessive
+- **Identification**: All employees with reporting level > 4
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Performance Considerations
 
----
+- **Large Dataset Support**: Optimized for up to 1000 employees
+- **Memory Management**: Efficient memory usage with streaming
+- **Error Handling**: Graceful handling of malformed data
+- **Logging**: Comprehensive logging for debugging and monitoring
 
-**📖 [View Complete Documentation](docs/README.md) | [Report an Issue](https://github.com/your-repo/issues) | [Ask a Question](https://github.com/your-repo/discussions)**
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For questions and support, please contact the development team or create an issue in the repository.
