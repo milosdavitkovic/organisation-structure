@@ -1,6 +1,8 @@
-package organisation.structure.exercise.util;
+package organisation.structure.exercise.core.util;
 
-import organisation.structure.exercise.model.Employee;
+import lombok.NonNull;
+import organisation.structure.exercise.core.configuration.annotation.UtilClass;
+import organisation.structure.exercise.core.model.Employee;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
  * Provides methods to validate employee data integrity and organizational structure.
  */
 @Slf4j
+@UtilClass
 public class EmployeeValidationUtil {
     
     private static final double MIN_SALARY = 0.0;
@@ -24,33 +27,33 @@ public class EmployeeValidationUtil {
      * @param employees List of employees to validate
      * @return true if all employees are valid, false otherwise
      */
-    public static boolean validateEmployees(List<Employee> employees) {
-        if (employees == null || employees.isEmpty()) {
-            log.warn("Employee list is null or empty");
+    public static boolean validateEmployees(@NonNull final List<Employee> employees) {
+        if (employees.isEmpty()) {
+            log.warn("[Organization Analyzes] an Employee list is null or empty");
             return false;
         }
         
         // Check for duplicate IDs
         if (hasDuplicateIds(employees)) {
-            log.warn("Duplicate employee IDs found");
+            log.warn("[Organization Analyzes] Duplicate employee IDs found");
             return false;
         }
         
         // Check for valid employee data
         for (Employee employee : employees) {
             if (employee == null) {
-                log.warn("Null employee found in list");
+                log.warn("[Organization Analyzes] Null employee found in a list");
                 return false;
             }
             if (!isValidEmployee(employee)) {
-                log.warn("Invalid employee data found: {}", employee.getId());
+                log.warn("[Organization Analyzes] Invalid employee data found: {}", employee.getId());
                 return false;
             }
         }
         
         // Check for valid organizational structure
         if (!isValidOrganizationalStructure(employees)) {
-            log.warn("Invalid organizational structure found");
+            log.warn("[Organization Analyzes] Invalid organizational structure found");
             return false;
         }
         
@@ -70,25 +73,25 @@ public class EmployeeValidationUtil {
         
         // Validate ID
         if (employee.getId() == null || employee.getId().trim().isEmpty()) {
-            log.debug("Employee ID is null or empty");
+            log.debug("[Organization Analyzes] Employee ID is null or empty");
             return false;
         }
         
         // Validate first name
         if (employee.getFirstName() == null || employee.getFirstName().trim().isEmpty()) {
-            log.debug("Employee first name is null or empty for ID: {}", employee.getId());
+            log.debug("[Organization Analyzes] Employee-first name is null or empty for ID: {}", employee.getId());
             return false;
         }
         
         // Validate last name
         if (employee.getLastName() == null || employee.getLastName().trim().isEmpty()) {
-            log.debug("Employee last name is null or empty for ID: {}", employee.getId());
+            log.debug("[Organization Analyzes] Employee-last name is null or empty for ID: {}", employee.getId());
             return false;
         }
         
         // Validate salary
         if (employee.getSalary() < MIN_SALARY || employee.getSalary() > MAX_SALARY) {
-            log.debug("Invalid salary: {} for employee ID: {}", employee.getSalary(), employee.getId());
+            log.debug("[Organization Analyzes] Invalid salary: {} for employee ID: {}", employee.getSalary(), employee.getId());
             return false;
         }
         
@@ -101,7 +104,7 @@ public class EmployeeValidationUtil {
      * @param employees List of employees to check
      * @return true if duplicate IDs are found, false otherwise
      */
-    public static boolean hasDuplicateIds(List<Employee> employees) {
+    public static boolean hasDuplicateIds(@NonNull final List<Employee> employees) {
         Map<String, Long> idCounts = employees.stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(Employee::getId, Collectors.counting()));
@@ -115,28 +118,28 @@ public class EmployeeValidationUtil {
      * @param employees List of employees to validate
      * @return true if the structure is valid, false otherwise
      */
-    public static boolean isValidOrganizationalStructure(List<Employee> employees) {
+    public static boolean isValidOrganizationalStructure(@NonNull final List<Employee> employees) {
         // Check for exactly one CEO
         long ceoCount = employees.stream()
                 .filter(Employee::isCEO)
                 .count();
         
         if (ceoCount != 1) {
-            log.warn("Invalid CEO count: {} (expected 1)", ceoCount);
+            log.warn("[Organization Analyzes] Invalid CEO count: {} (expected 1)", ceoCount);
             return false;
         }
         
         // Check for valid manager references
         for (Employee employee : employees) {
             if (!employee.isCEO() && !isValidManagerReference(employee, employees)) {
-                log.warn("Invalid manager reference for employee ID: {}", employee.getId());
+                log.warn("[Organization Analyzes] Invalid manager reference for employee ID: {}", employee.getId());
                 return false;
             }
         }
         
         // Check for circular references
         if (hasCircularReferences(employees)) {
-            log.warn("Circular references found in organizational structure");
+            log.warn("[Organization Analyzes] Circular references found in organizational structure");
             return false;
         }
         
@@ -157,7 +160,7 @@ public class EmployeeValidationUtil {
         
         String managerId = employee.getManagerId();
         if (managerId == null || managerId.trim().isEmpty()) {
-            log.debug("Non-CEO employee has no manager ID: {}", employee.getId());
+            log.debug("[Organization Analyzes] Non-CEO employee has no manager ID: {}", employee.getId());
             return false;
         }
         
@@ -166,7 +169,7 @@ public class EmployeeValidationUtil {
                 .anyMatch(emp -> emp.getId().equals(managerId));
         
         if (!managerExists) {
-            log.debug("Manager not found for employee ID: {} (manager ID: {})", 
+            log.debug("[Organization Analyzes] Manager not found for employee ID: {} (manager ID: {})", 
                      employee.getId(), managerId);
             return false;
         }
@@ -180,7 +183,7 @@ public class EmployeeValidationUtil {
      * @param employees List of employees to check
      * @return true if circular references are found, false otherwise
      */
-    public static boolean hasCircularReferences(List<Employee> employees) {
+    public static boolean hasCircularReferences(@NonNull final List<Employee> employees) {
         for (Employee employee : employees) {
             if (hasCircularReference(employee, employees)) {
                 return true;
@@ -236,7 +239,7 @@ public class EmployeeValidationUtil {
      * @param employees List of employees to validate
      * @return true if salary distribution is reasonable, false otherwise
      */
-    public static boolean isValidSalaryDistribution(List<Employee> employees) {
+    public static boolean isValidSalaryDistribution(@NonNull final List<Employee> employees) {
         if (employees.isEmpty()) {
             return true;
         }
@@ -258,21 +261,24 @@ public class EmployeeValidationUtil {
         
         // Check for reasonable salary ranges
         if (minSalary < 10000) { // Minimum $10K salary
-            log.warn("Very low minimum salary: {}", minSalary);
+            log.warn("[Organization Analyzes] Very low minimum salary: {}", minSalary);
             return false;
         }
         
         if (maxSalary > 500000) { // Maximum $500K salary
-            log.warn("Very high maximum salary: {}", maxSalary);
+            log.warn("[Organization Analyzes] Very high maximum salary: {}", maxSalary);
             return false;
         }
         
         // Check for reasonable salary spread
         double salarySpread = maxSalary / minSalary;
         if (salarySpread > 100) { // Max 100x difference
-            log.warn("Very large salary spread: {}", salarySpread);
+            log.warn("[Organization Analyzes] Very large salary spread: {}", salarySpread);
             return false;
         }
+
+        log.debug("[Organization Analyzes] Salary distribution is reasonable: Min: {}, Max: {}, Avg: {}",
+                minSalary, maxSalary, avgSalary);
         
         return true;
     }
@@ -283,10 +289,10 @@ public class EmployeeValidationUtil {
      * @param employees List of employees to check
      * @return List of orphaned employees
      */
-    public static List<Employee> findOrphanedEmployees(List<Employee> employees) {
+    public static List<Employee> findOrphanedEmployees(@NonNull final List<Employee> employees) {
         return employees.stream()
                 .filter(employee -> !employee.isCEO() && !isValidManagerReference(employee, employees))
-                .collect(Collectors.toList());
+                .toList();
     }
     
     /**
@@ -295,9 +301,9 @@ public class EmployeeValidationUtil {
      * @param employees List of employees to check
      * @return List of employees with missing data
      */
-    public static List<Employee> findEmployeesWithMissingData(List<Employee> employees) {
+    public static List<Employee> findEmployeesWithMissingData(@NonNull final List<Employee> employees) {
         return employees.stream()
                 .filter(employee -> !isValidEmployee(employee))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

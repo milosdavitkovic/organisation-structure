@@ -112,11 +112,11 @@ public class ExerciseApplication implements CommandLineRunner {
 - Generating analysis reports
 
 **Key Methods**:
-- `analyzeOrganizationalStructure(List<Employee> employees)`: Main analysis method
+- `analyzeOrganizationalStructure(@NonNull final List<Employee> employees)`: Main analysis method
 - `buildReportingRelationships(Map<String, Employee> employeeMap)`: Hierarchy building
 - `calculateReportingLevels(Employee employee, int level)`: Level calculation
-- `analyzeManagerSalaries(List<Employee> employees)`: Salary analysis
-- `analyzeReportingLines(List<Employee> employees)`: Reporting line analysis
+- `analyzeManagerSalaries(@NonNull final List<Employee> employees)`: Salary analysis
+- `analyzeReportingLines(@NonNull final List<Employee> employees)`: Reporting line analysis
 
 ### 3. Domain Layer
 
