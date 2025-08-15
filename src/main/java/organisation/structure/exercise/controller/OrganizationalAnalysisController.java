@@ -1,10 +1,11 @@
 package organisation.structure.exercise.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
 import organisation.structure.exercise.model.AnalysisResult;
 import organisation.structure.exercise.service.IOrganizationalAnalysisService;
 import organisation.structure.exercise.view.IOrganizationalAnalysisView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 /**
  * Controller implementation for organizational analysis.
@@ -29,13 +30,8 @@ public class OrganizationalAnalysisController implements IOrganizationalAnalysis
     @Override
     public AnalysisResult analyzeOrganization(String csvFilePath) {
         try {
-            // Delegate the analysis to the service layer
-            analysisService.analyzeOrganizationFromCsv(csvFilePath);
-            
-            // For now, return a simple success result
-            // In a more sophisticated implementation, we would capture the results
-            // from the service and return them in the AnalysisResult
-            AnalysisResult result = AnalysisResult.success(null, null, null, null);
+            // Delegate the analysis to the service layer and get the actual results
+            AnalysisResult result = analysisService.analyzeOrganizationFromCsv(csvFilePath);
             
             // Display the results using the view
             view.displayAnalysisResults(result);
