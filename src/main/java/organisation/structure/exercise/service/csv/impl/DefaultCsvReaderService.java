@@ -1,12 +1,5 @@
 package organisation.structure.exercise.service.csv.impl;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import organisation.structure.exercise.model.Employee;
-import organisation.structure.exercise.service.csv.ICsvReaderService;
-import organisation.structure.exercise.util.CsvValidationUtil;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +9,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+import organisation.structure.exercise.model.Employee;
+import organisation.structure.exercise.service.csv.ICsvReaderService;
+import organisation.structure.exercise.util.CsvValidationUtil;
 
 /**
  * Optimized implementation of CSV reader service.
@@ -38,7 +38,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
         }
         
         // Estimate memory requirements
-        long estimatedMemory = estimateMemoryUsage(filePath);
+        long estimatedMemory = CsvValidationUtil.estimateMemoryRequirements(filePath);
         log.info("Estimated memory usage: {} bytes", estimatedMemory);
         
         List<Employee> employees = new ArrayList<>();
@@ -55,7 +55,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
                 try {
                     if (isFirstLine) {
                         isFirstLine = false;
-                        if (!CsvValidationUtil.validateHeader(line)) {
+                        if (!CsvValidationUtil.validateCsvHeader(filePath)) {
                             throw new IOException("Invalid CSV header format");
                         }
                         continue;
@@ -96,29 +96,26 @@ public class DefaultCsvReaderService implements ICsvReaderService {
         log.debug("Validating CSV file: {}", filePath);
         
         // Check if file exists and is readable
-        if (!CsvValidationUtil.isValidFile(filePath)) {
+        if (!CsvValidationUtil.isValidCsvFile(filePath)) {
             return false;
         }
         
         // Check file size and line count
-        if (!CsvValidationUtil.validateFileSize(filePath)) {
+        if (!validateFileSize(filePath)) {
             return false;
         }
         
         // Validate header
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get(filePath), StandardCharsets.UTF_8)) {
-            String headerLine = reader.readLine();
-            if (headerLine == null) {
-                log.warn("CSV file is empty");
-                return false;
-            }
-            
-            return CsvValidationUtil.validateHeader(headerLine);
-            
-        } catch (IOException e) {
-            log.error("Error validating CSV file: {}", e.getMessage());
+        if (!CsvValidationUtil.validateCsvHeader(filePath)) {
             return false;
         }
+        
+        // Validate content structure
+        if (!CsvValidationUtil.validateCsvContent(filePath)) {
+            return false;
+        }
+        
+        return true;
     }
     
     @Override
@@ -133,6 +130,37 @@ public class DefaultCsvReaderService implements ICsvReaderService {
     }
     
     /**
+     * Validates file size constraints.
+     * 
+     * @param filePath The path to the CSV file
+     * @return true if file size is acceptable, false otherwise
+     */
+    private boolean validateFileSize(String filePath) {
+        try {
+            Path path = Paths.get(filePath);
+            long fileSize = Files.size(path);
+            
+            // Check if file is too large (e.g., > 100MB)
+            if (fileSize > 100 * 1024 * 1024) {
+                log.warn("CSV file is too large: {} bytes", fileSize);
+                return false;
+            }
+            
+            // Check if file is too small (just header)
+            long lineCount = Files.lines(path).count();
+            if (lineCount <= 1) {
+                log.warn("CSV file has no data lines, only header");
+                return false;
+            }
+            
+            return true;
+        } catch (IOException e) {
+            log.error("Error validating file size: {}", e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
      * Parses a single employee line with retry logic and validation.
      * 
      * @param line The CSV line to parse
@@ -140,7 +168,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
      * @return Employee object or null if parsing failed
      */
     private Employee parseEmployeeLine(String line, int lineNumber) {
-        if (!CsvValidationUtil.validateDataLine(line, lineNumber)) {
+        if (!CsvValidationUtil.isValidCsvLine(line)) {
             return null;
         }
         
@@ -174,15 +202,5 @@ public class DefaultCsvReaderService implements ICsvReaderService {
         }
         
         return null;
-    }
-    
-    /**
-     * Estimates memory usage for processing the CSV file.
-     * 
-     * @param filePath The path to the CSV file
-     * @return Estimated memory usage in bytes
-     */
-    private long estimateMemoryUsage(String filePath) {
-        return CsvValidationUtil.estimateMemoryUsage(filePath);
     }
 }
