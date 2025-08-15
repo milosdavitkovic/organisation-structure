@@ -1,4 +1,4 @@
-package organisation.structure.exercise.model;
+package organisation.structure.exercise.core.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

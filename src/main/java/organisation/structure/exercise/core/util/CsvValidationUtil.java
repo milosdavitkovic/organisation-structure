@@ -1,4 +1,4 @@
-package organisation.structure.exercise.util;
+package organisation.structure.exercise.core.util;
 
 import lombok.extern.slf4j.Slf4j;
 

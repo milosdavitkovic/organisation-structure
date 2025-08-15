@@ -1,6 +1,6 @@
-package organisation.structure.exercise.util;
+package organisation.structure.exercise.core.util;
 
-import organisation.structure.exercise.model.Employee;
+import organisation.structure.exercise.core.model.Employee;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

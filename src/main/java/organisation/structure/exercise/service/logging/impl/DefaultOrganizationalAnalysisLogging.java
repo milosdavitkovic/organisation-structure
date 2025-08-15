@@ -1,21 +1,23 @@
-package organisation.structure.exercise.view;
+package organisation.structure.exercise.service.logging.impl;
 
-import organisation.structure.exercise.model.AnalysisResult;
-import organisation.structure.exercise.model.OrganizationalSummary;
-import organisation.structure.exercise.view.IOrganizationalAnalysisView;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import organisation.structure.exercise.core.model.AnalysisResult;
+import organisation.structure.exercise.core.model.OrganizationalSummary;
+import organisation.structure.exercise.service.logging.OrganizationalAnalysisLogging;
 
 /**
  * Console-based view implementation for organizational analysis.
  * Displays analysis results to the console output.
  */
-@Component
-public class ConsoleOrganizationalAnalysisView implements IOrganizationalAnalysisView {
+@Slf4j
+@Service
+public class DefaultOrganizationalAnalysisLogging implements OrganizationalAnalysisLogging {
     
     @Override
     public void displayAnalysisResults(AnalysisResult result) {
         if (result.isSuccess()) {
-            System.out.println("=== ANALYSIS COMPLETED SUCCESSFULLY ===");
+            log.info("=== ANALYSIS COMPLETED SUCCESSFULLY ===");
             
             if (result.getOrganizationalSummary() != null) {
                 displayOrganizationalSummary(result.getOrganizationalSummary());
@@ -40,7 +42,7 @@ public class ConsoleOrganizationalAnalysisView implements IOrganizationalAnalysi
     
     @Override
     public void displayOrganizationalSummary(OrganizationalSummary summary) {
-        System.out.println("\n=== ORGANIZATIONAL SUMMARY ===");
+        log.info("\n=== ORGANIZATIONAL SUMMARY ===");
         System.out.printf("CEO: %s (ID: %s)%n", 
             summary.getCeo().getFullName(), summary.getCeo().getId());
         System.out.printf("Total Employees: %d%n", summary.getTotalEmployees());
@@ -57,39 +59,39 @@ public class ConsoleOrganizationalAnalysisView implements IOrganizationalAnalysi
     
     @Override
     public void displaySuccess(String message) {
-        System.out.println("SUCCESS: " + message);
+        log.info("SUCCESS: " + message);
     }
     
     @Override
     public void displayInfo(String message) {
-        System.out.println("INFO: " + message);
+        log.info("INFO: " + message);
     }
     
 
     
-    private void displayUnderpaidManagers(java.util.List<organisation.structure.exercise.model.Employee> managers) {
-        System.out.println("\n=== MANAGER SALARY ANALYSIS ===");
-        System.out.println("⚠ UNDERPAID MANAGERS:");
-        for (organisation.structure.exercise.model.Employee manager : managers) {
+    private void displayUnderpaidManagers(java.util.List<organisation.structure.exercise.core.model.Employee> managers) {
+        log.info("\n=== MANAGER SALARY ANALYSIS ===");
+        log.info("⚠ UNDERPAID MANAGERS:");
+        for (organisation.structure.exercise.core.model.Employee manager : managers) {
             double underpayment = manager.getUnderpaymentAmount();
             System.out.printf("  - %s (ID: %s): Underpaid by $%.2f%n", 
                 manager.getFullName(), manager.getId(), underpayment);
         }
     }
     
-    private void displayOverpaidManagers(java.util.List<organisation.structure.exercise.model.Employee> managers) {
-        System.out.println("⚠ OVERPAID MANAGERS:");
-        for (organisation.structure.exercise.model.Employee manager : managers) {
+    private void displayOverpaidManagers(java.util.List<organisation.structure.exercise.core.model.Employee> managers) {
+        log.info("⚠ OVERPAID MANAGERS:");
+        for (organisation.structure.exercise.core.model.Employee manager : managers) {
             double overpayment = manager.getOverpaymentAmount();
             System.out.printf("  - %s (ID: %s): Overpaid by $%.2f%n", 
                 manager.getFullName(), manager.getId(), overpayment);
         }
     }
     
-    private void displayLongReportingLines(java.util.List<organisation.structure.exercise.model.Employee> employees) {
-        System.out.println("\n=== REPORTING LINE ANALYSIS ===");
-        System.out.println("⚠ EMPLOYEES WITH TOO LONG REPORTING LINES:");
-        for (organisation.structure.exercise.model.Employee employee : employees) {
+    private void displayLongReportingLines(java.util.List<organisation.structure.exercise.core.model.Employee> employees) {
+        log.info("\n=== REPORTING LINE ANALYSIS ===");
+        log.info("⚠ EMPLOYEES WITH TOO LONG REPORTING LINES:");
+        for (organisation.structure.exercise.core.model.Employee employee : employees) {
             int excessLevels = employee.getExcessReportingLevels();
             System.out.printf("  - %s (ID: %s): %d levels too deep (Level %d)%n", 
                 employee.getFullName(), employee.getId(), 

@@ -7,14 +7,17 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import organisation.structure.exercise.model.AnalysisResult;
-import organisation.structure.exercise.model.Employee;
-import organisation.structure.exercise.model.OrganizationalSummary;
-import organisation.structure.exercise.service.analysis.IOrganizationalAnalyzerService;
-import organisation.structure.exercise.util.EmployeeValidationUtil;
+import organisation.structure.exercise.core.model.AnalysisResult;
+import organisation.structure.exercise.core.model.Employee;
+import organisation.structure.exercise.core.model.OrganizationalSummary;
+import organisation.structure.exercise.core.util.CsvValidationUtil;
+import organisation.structure.exercise.service.analysis.OrganizationalAnalyzerService;
+import organisation.structure.exercise.core.util.EmployeeValidationUtil;
+import organisation.structure.exercise.service.csv.ICsvReaderService;
 
 /**
  * Optimized implementation of organizational analyzer service.
@@ -22,11 +25,14 @@ import organisation.structure.exercise.util.EmployeeValidationUtil;
  */
 @Slf4j
 @Service
-public class DefaultOrganizationalAnalyzerService implements IOrganizationalAnalyzerService {
+public class DefaultOrganizationalAnalyzerService implements OrganizationalAnalyzerService {
     
     private static final int MAX_REPORTING_LEVELS = 4;
     private static final double UNDERPAID_THRESHOLD = 1.2;
     private static final double OVERPAID_THRESHOLD = 1.5;
+
+    @Autowired
+    private ICsvReaderService csvReaderService;
     
     @Override
     public AnalysisResult analyzeOrganizationalStructure(List<Employee> employees) {
@@ -261,6 +267,73 @@ public class DefaultOrganizationalAnalyzerService implements IOrganizationalAnal
         EmployeeLevel(Employee employee, int level) {
             this.employee = employee;
             this.level = level;
+        }
+    }
+
+    @Override
+    public AnalysisResult analyzeOrganizationFromCsv(String csvFilePath) {
+        log.info("Starting organizational analysis from CSV file: {}", csvFilePath);
+
+        try {
+            // Validate input file
+            if (!validateInputFile(csvFilePath)) {
+                log.error("Input file validation failed: {}", csvFilePath);
+                return AnalysisResult.failure("Invalid input file: " + csvFilePath);
+            }
+
+            // Read employees from CSV
+            List<Employee> employees = csvReaderService.readEmployeesFromCsv(csvFilePath);
+            log.info("Successfully loaded {} employees from CSV", employees.size());
+
+            // Perform comprehensive analysis
+            AnalysisResult result = analyzeOrganizationalStructure(employees);
+
+            if (result.isSuccess()) {
+                log.info("Organizational analysis completed successfully");
+            } else {
+                log.error("Organizational analysis failed: {}", result.getErrorMessage());
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            log.error("Error during organizational analysis: {}", e.getMessage(), e);
+            return AnalysisResult.failure("Error during analysis: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean validateInputFile(String csvFilePath) {
+        log.debug("Validating input file: {}", csvFilePath);
+
+        // Use the CSV validation utility
+        if (!CsvValidationUtil.isValidCsvFile(csvFilePath)) {
+            log.warn("File validation failed: {}", csvFilePath);
+            return false;
+        }
+
+        // Use the CSV reader service validation
+        if (!csvReaderService.validateCsvFile(csvFilePath)) {
+            log.warn("CSV validation failed: {}", csvFilePath);
+            return false;
+        }
+
+        log.debug("Input file validation successful: {}", csvFilePath);
+        return true;
+    }
+
+    @Override
+    public long estimateMemoryRequirements(String csvFilePath) {
+        log.debug("Estimating memory requirements for: {}", csvFilePath);
+
+        try {
+            // Use the CSV validation utility for memory estimation
+            long estimatedMemory = CsvValidationUtil.estimateMemoryRequirements(csvFilePath);
+            log.debug("Estimated memory requirements: {} bytes", estimatedMemory);
+            return estimatedMemory;
+        } catch (Exception e) {
+            log.warn("Error estimating memory requirements: {}", e.getMessage());
+            return 0;
         }
     }
 }

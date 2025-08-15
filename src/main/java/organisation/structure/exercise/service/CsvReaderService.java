@@ -1,6 +1,6 @@
 package organisation.structure.exercise.service;
 
-import organisation.structure.exercise.model.Employee;
+import organisation.structure.exercise.core.model.Employee;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;

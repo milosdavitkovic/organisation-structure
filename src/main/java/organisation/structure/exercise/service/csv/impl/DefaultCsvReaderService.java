@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import organisation.structure.exercise.model.Employee;
+import organisation.structure.exercise.core.model.Employee;
 import organisation.structure.exercise.service.csv.ICsvReaderService;
-import organisation.structure.exercise.util.CsvValidationUtil;
+import organisation.structure.exercise.core.util.CsvValidationUtil;
 
 /**
  * Optimized implementation of CSV reader service.
