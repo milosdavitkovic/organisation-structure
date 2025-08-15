@@ -304,7 +304,7 @@ public int getExcessReportingLevels() {
 
 #### Analysis Orchestration
 ```java
-public void analyzeOrganizationalStructure(List<Employee> employees) {
+public void analyzeOrganizationalStructure(@NonNull final List<Employee> employees) {
     // 1. Build organizational hierarchy
     Map<String, Employee> employeeMap = buildEmployeeMap(employees);
     Employee ceo = findCEO(employees);

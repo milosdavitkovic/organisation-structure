@@ -1,13 +1,13 @@
-package organisation.structure.exercise.view;
+package organisation.structure.exercise.service.logging;
 
-import organisation.structure.exercise.model.AnalysisResult;
-import organisation.structure.exercise.model.OrganizationalSummary;
+import organisation.structure.exercise.core.model.AnalysisResult;
+import organisation.structure.exercise.core.model.OrganizationalSummary;
 
 /**
  * Interface for the organizational analysis view.
  * Provides methods to display analysis results and organizational information to users.
  */
-public interface IOrganizationalAnalysisView {
+public interface OrganizationalAnalysisLogging {
     
     /**
      * Displays the organizational summary.

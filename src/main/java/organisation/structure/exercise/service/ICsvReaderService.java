@@ -1,6 +1,6 @@
 package organisation.structure.exercise.service;
 
-import organisation.structure.exercise.model.Employee;
+import organisation.structure.exercise.core.model.Employee;
 
 import java.io.IOException;
 import java.util.List;

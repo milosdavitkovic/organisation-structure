@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import organisation.structure.exercise.model.Employee;
+import organisation.structure.exercise.core.model.Employee;
 import organisation.structure.exercise.service.csv.ICsvReaderService;
-import organisation.structure.exercise.util.CsvValidationUtil;
+import organisation.structure.exercise.core.util.CsvValidationUtil;
 
 /**
  * Optimized implementation of CSV reader service.
@@ -30,7 +30,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
     
     @Override
     public List<Employee> readEmployeesFromCsv(String filePath) throws IOException {
-        log.info("Starting CSV file reading: {}", filePath);
+         log.info("[Organization Analyzes] Starting CSV file reading: {}", filePath);
         
         // Validate file before processing
         if (!validateCsvFile(filePath)) {
@@ -39,7 +39,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
         
         // Estimate memory requirements
         long estimatedMemory = CsvValidationUtil.estimateMemoryRequirements(filePath);
-        log.info("Estimated memory usage: {} bytes", estimatedMemory);
+         log.info("[Organization Analyzes] Estimated memory usage: {} bytes", estimatedMemory);
         
         List<Employee> employees = new ArrayList<>();
         AtomicInteger lineNumber = new AtomicInteger(0);
@@ -70,11 +70,11 @@ public class DefaultCsvReaderService implements ICsvReaderService {
                     
                     // Log progress for large files
                     if (lineNumber.get() % BATCH_SIZE == 0) {
-                        log.info("Processed {} lines, {} employees loaded", lineNumber.get(), employees.size());
+                         log.info("[Organization Analyzes] Processed {} lines, {} employees loaded", lineNumber.get(), employees.size());
                     }
                     
                 } catch (Exception e) {
-                    log.error("Error processing line {}: {}", lineNumber.get(), e.getMessage());
+                     log.error("[Organization Analyzes] Error processing line {}: {}", lineNumber.get(), e.getMessage());
                     errorCount.incrementAndGet();
                     
                     // Continue processing other lines unless too many errors
@@ -85,7 +85,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
             }
         }
         
-        log.info("CSV reading completed. Total lines: {}, Employees loaded: {}, Errors: {}", 
+         log.info("[Organization Analyzes] CSV reading completed. Total lines: {}, Employees loaded: {}, Errors: {}", 
                 lineNumber.get(), employees.size(), errorCount.get());
         
         return employees;
@@ -93,7 +93,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
     
     @Override
     public boolean validateCsvFile(String filePath) {
-        log.debug("Validating CSV file: {}", filePath);
+        log.debug("[Organization Analyzes] Validating CSV file: {}", filePath);
         
         // Check if file exists and is readable
         if (!CsvValidationUtil.isValidCsvFile(filePath)) {
@@ -124,7 +124,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
             Path path = Paths.get(filePath);
             return Files.lines(path).count();
         } catch (IOException e) {
-            log.error("Error counting lines in CSV file: {}", e.getMessage());
+             log.error("[Organization Analyzes] Error counting lines in CSV file: {}", e.getMessage());
             throw e;
         }
     }
@@ -142,20 +142,20 @@ public class DefaultCsvReaderService implements ICsvReaderService {
             
             // Check if file is too large (e.g., > 100MB)
             if (fileSize > 100 * 1024 * 1024) {
-                log.warn("CSV file is too large: {} bytes", fileSize);
+                log.warn("[Organization Analyzes] CSV file is too large: {} bytes", fileSize);
                 return false;
             }
             
             // Check if file is too small (just header)
             long lineCount = Files.lines(path).count();
             if (lineCount <= 1) {
-                log.warn("CSV file has no data lines, only header");
+                log.warn("[Organization Analyzes] CSV file has no data lines, only header");
                 return false;
             }
             
             return true;
         } catch (IOException e) {
-            log.error("Error validating file size: {}", e.getMessage());
+             log.error("[Organization Analyzes] Error validating file size: {}", e.getMessage());
             return false;
         }
     }
@@ -189,12 +189,12 @@ public class DefaultCsvReaderService implements ICsvReaderService {
                 return new Employee(id, firstName, lastName, salary, managerId);
                 
             } catch (NumberFormatException e) {
-                log.warn("Attempt {}: Error parsing salary in line {}: {}", attempt, lineNumber, e.getMessage());
+                log.warn("[Organization Analyzes] Attempt {}: Error parsing salary in line {}: {}", attempt, lineNumber, e.getMessage());
                 if (attempt == MAX_RETRIES) {
                     return null;
                 }
             } catch (Exception e) {
-                log.warn("Attempt {}: Unexpected error parsing line {}: {}", attempt, lineNumber, e.getMessage());
+                log.warn("[Organization Analyzes] Attempt {}: Unexpected error parsing line {}: {}", attempt, lineNumber, e.getMessage());
                 if (attempt == MAX_RETRIES) {
                     return null;
                 }
