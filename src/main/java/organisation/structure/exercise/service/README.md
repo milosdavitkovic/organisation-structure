@@ -125,7 +125,7 @@ All services implement comprehensive error handling:
 try {
     // Service operation
 } catch (SpecificException e) {
-    log.error("Operation failed: {}", e.getMessage(), e);
+     log.error("\n [Organization Analyzes] Operation failed: {}", e.getMessage(), e);
     throw new ServiceException("User-friendly message", e);
 }
 ```
@@ -140,9 +140,9 @@ Services use Lombok's `@Slf4j` for consistent logging:
 public class DefaultExampleService {
     
     public void performOperation() {
-        log.info("Starting operation");
+         log.info("[Organization Analyzes] Starting operation");
         // Implementation
-        log.debug("Operation completed successfully");
+        log.debug("[Organization Analyzes] Operation completed successfully");
     }
 }
 ```

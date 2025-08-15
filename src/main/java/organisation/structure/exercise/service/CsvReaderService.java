@@ -1,5 +1,6 @@
 package organisation.structure.exercise.service;
 
+import lombok.extern.slf4j.Slf4j;
 import organisation.structure.exercise.core.model.Employee;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class CsvReaderService implements ICsvReaderService {
     
@@ -40,7 +42,7 @@ public class CsvReaderService implements ICsvReaderService {
         try {
             String[] parts = line.split(",");
             if (parts.length < 4) {
-                System.err.println("Invalid line format: " + line);
+                 log.error("\n [Organization Analyzes] an Invalid line format: {}", line);
                 return null;
             }
             
@@ -56,7 +58,7 @@ public class CsvReaderService implements ICsvReaderService {
             
             return new Employee(id, firstName, lastName, salary, managerId);
         } catch (NumberFormatException e) {
-            System.err.println("Error parsing salary in line: " + line);
+             log.error("\n [Organization Analyzes] Error parsing salary in line: {}", line);
             return null;
         }
     }

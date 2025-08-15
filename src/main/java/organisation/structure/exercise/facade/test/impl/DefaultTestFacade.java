@@ -17,7 +17,7 @@ public class DefaultTestFacade implements TestFacade {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
-        log.info("Application is ready - ensuring DataSource is properly initialized");
+         log.info("[Organization Analyzes] Application is ready - ensuring DataSource is properly initialized");
 
         localTestFacade.localTestAnalysis();
         localTestFacade.localExtendedTestAnalysis();
@@ -25,7 +25,7 @@ public class DefaultTestFacade implements TestFacade {
 
     @EventListener(org.springframework.context.event.ContextClosedEvent.class)
     public void onContextClosed() {
-        log.info("Application context is closing - ensuring proper cleanup");
+         log.info("[Organization Analyzes] Application context is closing - ensuring proper cleanup");
     }
 
 

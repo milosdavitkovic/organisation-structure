@@ -112,7 +112,7 @@ public void performAnalysis(String csvFilePath) {
         }
         
     } catch (Exception e) {
-        log.error("Analysis failed", e);
+         log.error("\n [Organization Analyzes] Analysis failed", e);
         handleError(e.getMessage());
     }
 }
@@ -125,7 +125,7 @@ public void checkMemoryRequirements(String csvFilePath) {
     long estimatedMemory = analysisFacade.estimateMemoryRequirements(csvFilePath);
     
     if (estimatedMemory > MAX_MEMORY_THRESHOLD) {
-        log.warn("Large file detected. Estimated memory: {} bytes", estimatedMemory);
+        log.warn("[Organization Analyzes] Large file detected. Estimated memory: {} bytes", estimatedMemory);
         // Implement memory management strategy
     }
 }
@@ -198,10 +198,10 @@ public AnalysisResult analyzeOrganizationFromCsv(String csvFilePath) {
         return analyzerService.analyzeOrganizationalStructure(employees);
         
     } catch (IOException e) {
-        log.error("File reading error", e);
+         log.error("\n [Organization Analyzes] File reading error", e);
         return AnalysisResult.failure("Error reading file: " + e.getMessage());
     } catch (Exception e) {
-        log.error("Analysis error", e);
+         log.error("\n [Organization Analyzes] Analysis error", e);
         return AnalysisResult.failure("Analysis failed: " + e.getMessage());
     }
 }

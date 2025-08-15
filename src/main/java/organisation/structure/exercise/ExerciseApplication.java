@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ExerciseApplication {
 
     public static void main(String[] args) {
-        log.info("[Organization Analyzes] Starting the Organization Analyzes Application. Happy using!");
+         log.info("[Organization Analyzes] [Organization Analyzes] Starting the Organization Analyzes Application. Happy using!");
         SpringApplication.run(ExerciseApplication.class, args);
     }
 

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import organisation.structure.exercise.core.configuration.annotation.Facade;
 import organisation.structure.exercise.core.model.AnalysisResult;
+import organisation.structure.exercise.core.util.LoggingUtil;
 import organisation.structure.exercise.facade.test.local.LocalTestFacade;
 import organisation.structure.exercise.service.logging.OrganizationalAnalysisLogging;
 import organisation.structure.exercise.service.test.LocalTestService;
@@ -21,30 +22,30 @@ public class DefaultLocalTestFacade implements LocalTestFacade {
 
     @Override
     public void localTestAnalysis() {
-        localTestService.getUsageInstructions();
+        LoggingUtil.logTestStartInfo();
 
-        final String csvFilePath = "src/main/resources/employees.csv";
+        final String csvFilePath = "src/test/resources/test-data/employees.csv";
         final AnalysisResult result = localTestService.analyzeOrganization(csvFilePath);
 
         if (!result.isSuccess()) {
-            analysisLogging.displayError("Analysis failed: " + result.getErrorMessage());
+            analysisLogging.displayError("[Organization Analyzes] Local Analysis failed: " + result.getErrorMessage());
         } else {
-            analysisLogging.displaySuccess("Analysis completed successfully");
+            analysisLogging.displaySuccess("[Organization Analyzes] Local analysis of organization completed successfully.");
         }
 
     }
 
     @Override
     public void localExtendedTestAnalysis() {
-        localTestService.getUsageInstructions();
+        LoggingUtil.logTestStartInfo();
 
-        final String csvFilePath = "src/main/resources/large-employees.csv";
+        final String csvFilePath = "src/test/resources/test-data/large-employees.csv";
         final AnalysisResult result = localTestService.analyzeOrganization(csvFilePath);
 
         if (!result.isSuccess()) {
-            analysisLogging.displayError("Analysis failed: " + result.getErrorMessage());
+            analysisLogging.displayError("[Organization Analyzes] Local extended analysis failed: " + result.getErrorMessage());
         } else {
-            analysisLogging.displaySuccess("Analysis completed successfully");
+            analysisLogging.displaySuccess("[Organization Analyzes] Local extended analysis of organization completed successfully.");
         }
     }
 }

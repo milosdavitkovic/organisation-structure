@@ -1,6 +1,7 @@
 package organisation.structure.exercise.core.util;
 
 import lombok.extern.slf4j.Slf4j;
+import organisation.structure.exercise.core.configuration.annotation.UtilClass;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.nio.file.Path;
  * Provides methods to validate CSV file format, structure, and content.
  */
 @Slf4j
+@UtilClass
 public class CsvValidationUtil {
     
     private static final String CSV_EXTENSION = ".csv";
@@ -27,7 +29,7 @@ public class CsvValidationUtil {
      */
     public static boolean isValidCsvFile(String filePath) {
         if (filePath == null || filePath.trim().isEmpty()) {
-            log.warn("File path is null or empty");
+            log.warn("[Organization Analyzes] File path is null or empty");
             return false;
         }
         
@@ -35,25 +37,25 @@ public class CsvValidationUtil {
         
         // Check if file exists
         if (!file.exists()) {
-            log.warn("File does not exist: {}", filePath);
+            log.warn("[Organization Analyzes] File does not exist: {}", filePath);
             return false;
         }
         
         // Check if file is readable
         if (!file.canRead()) {
-            log.warn("File is not readable: {}", filePath);
+            log.warn("[Organization Analyzes] File is not readable: {}", filePath);
             return false;
         }
         
         // Check if file has CSV extension
         if (!filePath.toLowerCase().endsWith(CSV_EXTENSION)) {
-            log.warn("File does not have CSV extension: {}", filePath);
+            log.warn("[Organization Analyzes] File does not have CSV extension: {}", filePath);
             return false;
         }
         
         // Check if file is not empty
         if (file.length() == 0) {
-            log.warn("File is empty: {}", filePath);
+            log.warn("[Organization Analyzes] File is empty: {}", filePath);
             return false;
         }
         
@@ -75,11 +77,11 @@ public class CsvValidationUtil {
             if (firstLine.trim().equals(EXPECTED_HEADER)) {
                 return true;
             } else {
-                log.warn("Invalid CSV header. Expected: {}, Found: {}", EXPECTED_HEADER, firstLine);
+                log.warn("[Organization Analyzes] Invalid CSV header. Expected: {}, Found: {}", EXPECTED_HEADER, firstLine);
                 return false;
             }
         } catch (IOException e) {
-            log.error("Error reading CSV header: {}", e.getMessage());
+             log.error("\n [Organization Analyzes] Error reading CSV header: {}", e.getMessage());
             return false;
         }
     }
@@ -97,7 +99,7 @@ public class CsvValidationUtil {
                     .filter(line -> !line.trim().isEmpty())
                     .allMatch(CsvValidationUtil::isValidCsvLine);
         } catch (IOException e) {
-            log.error("Error validating CSV content: {}", e.getMessage());
+             log.error("\n [Organization Analyzes] Error validating CSV content: {}", e.getMessage());
             return false;
         }
     }
@@ -117,25 +119,25 @@ public class CsvValidationUtil {
         
         // Check column count
         if (parts.length < MIN_COLUMNS || parts.length > MAX_COLUMNS) {
-            log.debug("Invalid column count: {} (expected {}-{})", parts.length, MIN_COLUMNS, MAX_COLUMNS);
+            log.debug("[Organization Analyzes] Invalid column count: {} (expected {}-{})", parts.length, MIN_COLUMNS, MAX_COLUMNS);
             return false;
         }
         
         // Validate ID (should not be empty)
         if (parts[0].trim().isEmpty()) {
-            log.debug("Employee ID is empty");
+            log.debug("[Organization Analyzes] Employee ID is empty");
             return false;
         }
         
         // Validate first name (should not be empty)
         if (parts[1].trim().isEmpty()) {
-            log.debug("First name is empty for employee ID: {}", parts[0]);
+            log.debug("[Organization Analyzes] First name is empty for employee ID: {}", parts[0]);
             return false;
         }
         
         // Validate last name (should not be empty)
         if (parts[2].trim().isEmpty()) {
-            log.debug("Last name is empty for employee ID: {}", parts[0]);
+            log.debug("[Organization Analyzes] Last name is empty for employee ID: {}", parts[0]);
             return false;
         }
         
@@ -143,11 +145,11 @@ public class CsvValidationUtil {
         try {
             double salary = Double.parseDouble(parts[3].trim());
             if (salary <= 0) {
-                log.debug("Invalid salary: {} for employee ID: {}", salary, parts[0]);
+                log.debug("[Organization Analyzes] Invalid salary: {} for employee ID: {}", salary, parts[0]);
                 return false;
             }
         } catch (NumberFormatException e) {
-            log.debug("Invalid salary format for employee ID: {}", parts[0]);
+            log.debug("[Organization Analyzes] an Invalid salary format for employee ID: {}", parts[0]);
             return false;
         }
         
@@ -167,7 +169,7 @@ public class CsvValidationUtil {
                     .filter(line -> !line.trim().isEmpty())
                     .count();
         } catch (IOException e) {
-            log.error("Error estimating employee count: {}", e.getMessage());
+             log.error("\n [Organization Analyzes] Error estimating employee count: {}", e.getMessage());
             return 0;
         }
     }
@@ -184,7 +186,7 @@ public class CsvValidationUtil {
             // Rough estimate: 1KB per employee for Employee object + overhead
             return lineCount * 1024;
         } catch (Exception e) {
-            log.error("Error estimating memory requirements: {}", e.getMessage());
+             log.error("\n [Organization Analyzes] Error estimating memory requirements: {}", e.getMessage());
             return 0;
         }
     }

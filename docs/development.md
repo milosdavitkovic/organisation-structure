@@ -279,7 +279,7 @@ done
 # src/main/resources/application.properties
 # Logging configuration
 logging.level.organisation.structure.exercise=DEBUG
-logging.pattern.console=%d{HH:mm:ss} %-5level %logger{36} - %msg%n
+logging.pattern.console=[{}]{HH:mm:ss} %-5level %logger{36} - %msg. 
 
 # Analysis thresholds (future)
 analysis.salary.underpaid.threshold=1.2
