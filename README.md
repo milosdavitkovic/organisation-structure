@@ -20,25 +20,53 @@ BIG COMPANY wants to analyze its organizational structure and identify potential
 - **Reporting Line Analysis**: Find employees with too long reporting chains
 - **Memory Optimized**: Efficient processing for large datasets
 - **Comprehensive Logging**: Detailed logging using Lombok
+- **Facade Pattern**: Simplified interface for complex operations
+- **Modular Architecture**: Clear separation of concerns with core, service, and facade layers
 
 ## Project Structure
 
 ```
 src/main/java/organisation/structure/exercise/
-├── model/                          # Data models
-│   └── Employee.java              # Employee entity with business logic
-├── service/                        # Service layer
-│   ├── ICsvReaderService.java     # CSV reading interface
-│   ├── CsvReaderService.java      # CSV reading implementation
-│   └── csv/impl/                  # CSV service implementations
-├── controller/                     # Controller layer
-│   └── OrganizationalAnalysisController.java
-├── view/                          # View layer
-│   └── ConsoleOrganizationalAnalysisView.java
-├── util/                          # Utility classes
-│   ├── CsvValidationUtil.java
-│   └── EmployeeValidationUtil.java
-└── ExerciseApplication.java       # Main application
+├── core/                           # Core business logic and models
+│   ├── configuration/              # Configuration and annotations
+│   │   └── annotation/             # Custom annotations
+│   │       ├── Facade.java         # Facade annotation
+│   │       ├── Properties.java     # Properties annotation
+│   │       ├── UtilClass.java      # Utility class annotation
+│   │       └── ValidatorClass.java # Validator annotation
+│   ├── model/                      # Data models and entities
+│   │   ├── AnalysisResult.java     # Analysis results model
+│   │   ├── Employee.java           # Employee entity with business logic
+│   │   └── OrganizationalSummary.java # Summary model
+│   └── util/                       # Core utility classes
+│       ├── CsvValidationUtil.java  # CSV validation utilities
+│       ├── EmployeeValidationUtil.java # Employee validation
+│       └── LoggingUtil.java        # Logging utilities
+├── facade/                         # Facade layer for simplified access
+│   ├── test/                       # Test facade implementations
+│   │   ├── impl/                   # Test facade implementations
+│   │   ├── local/                  # Local test facade
+│   │   │   ├── impl/               # Local test implementations
+│   │   │   └── LocalTestFacade.java
+│   │   └── TestFacade.java         # Test facade interface
+│   └── README.md                   # Facade documentation
+├── service/                        # Service layer with business logic
+│   ├── analysis/                   # Analysis services
+│   │   ├── impl/                   # Analysis implementations
+│   │   └── OrganizationalAnalyzerService.java # Analysis interface
+│   ├── csv/                        # CSV processing services
+│   │   ├── impl/                   # CSV implementations
+│   │   └── ICsvReaderService.java  # CSV reader interface
+│   ├── logging/                    # Logging services
+│   │   ├── impl/                   # Logging implementations
+│   │   └── OrganizationalAnalysisLogging.java # Logging interface
+│   ├── test/                       # Test services
+│   │   ├── impl/                   # Test implementations
+│   │   └── LocalTestService.java   # Local test service
+│   ├── CsvReaderService.java       # CSV reader service
+│   ├── ICsvReaderService.java      # CSV reader interface
+│   └── README.md                   # Service documentation
+└── ExerciseApplication.java        # Main Spring Boot application
 ```
 
 ## Technology Stack
@@ -143,19 +171,30 @@ The project includes test data files:
 
 ### Design Patterns
 
-- **MVC Pattern**: Clear separation of Model, View, and Controller
+- **Facade Pattern**: Simplified interface for complex operations through the facade layer
+- **Layered Architecture**: Clear separation with core, service, and facade layers
 - **Interface Segregation**: Focused interfaces for specific responsibilities
 - **Dependency Injection**: Spring-based dependency management
-- **Facade Pattern**: Simplified interface for complex operations
+- **Annotation-Driven Configuration**: Custom annotations for configuration
 
-### Service Layer
+### Layer Architecture
 
-The application follows a layered architecture:
+The application follows a modern layered architecture:
 
-1. **Controller Layer**: Handles user interactions and workflow
+1. **Core Layer**: Contains business models, utilities, and configuration
+   - **Model**: Data entities with business rules
+   - **Util**: Core utility classes for validation and logging
+   - **Configuration**: Custom annotations and configuration
+
 2. **Service Layer**: Contains business logic and data processing
-3. **Model Layer**: Data entities with business rules
-4. **View Layer**: Output formatting and display
+   - **Analysis Services**: Organizational analysis logic
+   - **CSV Services**: File processing and validation
+   - **Logging Services**: Comprehensive logging capabilities
+   - **Test Services**: Testing utilities and services
+
+3. **Facade Layer**: Provides simplified interfaces for complex operations
+   - **Test Facades**: Simplified testing interfaces
+   - **Local Facades**: Local testing and development interfaces
 
 ### Memory Optimization
 

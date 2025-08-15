@@ -1,18 +1,24 @@
 # Facade Package
 
-This package contains the facade layer components that provide a simplified interface for complex organizational analysis operations.
+This package contains the facade layer components that provide a simplified interface for testing and local development operations in the organizational analysis system.
 
 ## Overview
 
-The facade pattern is implemented to hide the complexity of the underlying services and provide a clean, high-level interface for organizational analysis operations.
+The facade pattern is implemented to provide clean, high-level interfaces for testing operations and local development workflows. The current implementation focuses on test facades that orchestrate testing scenarios and local analysis operations.
 
 ## Package Structure
 
 ```
 facade/
-├── IOrganizationalAnalysisFacade.java           # Main facade interface
-└── impl/
-    └── DefaultOrganizationalAnalysisFacade.java # Facade implementation
+├── test/                           # Test facade components
+│   ├── TestFacade.java             # Main test facade interface
+│   ├── impl/                       # Test facade implementations
+│   │   └── DefaultTestFacade.java  # Default test facade implementation
+│   └── local/                      # Local test facade components
+│       ├── LocalTestFacade.java    # Local test facade interface
+│       └── impl/                   # Local test facade implementations
+│           └── DefaultLocalTestFacade.java # Local test facade implementation
+└── README.md                       # This documentation
 ```
 
 ## Facade Pattern
@@ -21,112 +27,153 @@ facade/
 
 The facade pattern is used to:
 
-1. **Simplify Complex Operations**: Hide the complexity of multiple service interactions
-2. **Provide High-Level Interface**: Offer a clean API for organizational analysis
-3. **Orchestrate Services**: Coordinate multiple services to perform complex operations
-4. **Reduce Coupling**: Decouple client code from internal service implementations
+1. **Simplify Testing Operations**: Provide clean interfaces for test scenarios
+2. **Orchestrate Local Development**: Coordinate local testing and analysis workflows
+3. **Event-Driven Architecture**: Handle application lifecycle events
+4. **Service Coordination**: Coordinate multiple services for testing operations
 
 ### Benefits
 
-- **Simplified Client Code**: Clients only need to know about the facade interface
-- **Easier Maintenance**: Changes to internal services don't affect client code
-- **Better Testing**: Facade can be mocked for easier unit testing
-- **Performance Optimization**: Facade can optimize service calls and caching
+- **Simplified Testing**: Clean interfaces for test operations
+- **Event Management**: Automatic handling of application lifecycle events
+- **Service Integration**: Seamless integration with underlying services
+- **Local Development**: Streamlined local testing and analysis workflows
 
-## Facade Interface
+## Facade Interfaces
 
-### IOrganizationalAnalysisFacade
+### TestFacade
 
-**Purpose**: Main interface for organizational analysis operations.
+**Purpose**: Main interface for test facade operations.
+
+**Key Features**:
+- Application lifecycle event handling
+- Automatic test execution on application startup
+- Cleanup operations on application shutdown
+
+**Implementation**: `DefaultTestFacade`
+
+### LocalTestFacade
+
+**Purpose**: Interface for local testing and analysis operations.
 
 **Key Methods**:
 
 ```java
-public interface IOrganizationalAnalysisFacade {
+public interface LocalTestFacade {
     
     /**
-     * Performs complete organizational analysis from CSV file
+     * Performs local test analysis using sample data
      */
-    AnalysisResult analyzeOrganizationFromCsv(String csvFilePath);
+    void localTestAnalysis();
     
     /**
-     * Validates input file before processing
+     * Performs extended local test analysis using large dataset
      */
-    boolean validateInputFile(String csvFilePath);
-    
-    /**
-     * Estimates memory requirements for processing
-     */
-    long estimateMemoryRequirements(String csvFilePath);
-    
-    /**
-     * Performs analysis on existing employee data
-     */
-    AnalysisResult analyzeEmployeeData(@NonNull final List<Employee> employees);
+    void localExtendedTestAnalysis();
 }
 ```
 
-## Implementation
+## Implementation Details
 
-### DefaultOrganizationalAnalysisFacade
+### DefaultTestFacade
 
-**Purpose**: Default implementation of the organizational analysis facade.
+**Purpose**: Default implementation of the test facade that handles application lifecycle events.
 
 **Responsibilities**:
 
-1. **Service Coordination**: Orchestrates calls to underlying services
-2. **Error Handling**: Provides unified error handling across services
-3. **Performance Optimization**: Optimizes service calls and resource usage
-4. **Result Aggregation**: Combines results from multiple services
+1. **Application Lifecycle Management**: Handles application startup and shutdown events
+2. **Test Orchestration**: Coordinates local test execution
+3. **Service Integration**: Integrates with local test services
+4. **Event-Driven Operations**: Responds to Spring application events
 
 **Key Features**:
 
-- **Transaction Management**: Ensures data consistency across operations
-- **Caching**: Implements caching for frequently accessed data
-- **Async Processing**: Supports asynchronous processing for large datasets
-- **Monitoring**: Provides performance monitoring and metrics
+- **@EventListener Integration**: Automatically responds to Spring application events
+- **Service Coordination**: Orchestrates calls to local test services
+- **Lifecycle Management**: Ensures proper initialization and cleanup
+- **Logging**: Comprehensive logging for debugging and monitoring
+
+**Event Handling**:
+
+```java
+@EventListener(ApplicationReadyEvent.class)
+public void onApplicationReady() {
+    log.info("[Organization Analyzes] Application is ready - ensuring DataSource is properly initialized");
+    
+    localTestFacade.localTestAnalysis();
+    localTestFacade.localExtendedTestAnalysis();
+}
+
+@EventListener(ContextClosedEvent.class)
+public void onContextClosed() {
+    log.info("[Organization Analyzes] Application context is closing - ensuring proper cleanup");
+}
+```
+
+### DefaultLocalTestFacade
+
+**Purpose**: Implementation of local testing and analysis operations.
+
+**Responsibilities**:
+
+1. **Local Analysis Execution**: Performs organizational analysis on test data
+2. **Service Integration**: Integrates with analysis and logging services
+3. **Result Handling**: Processes and displays analysis results
+4. **Error Management**: Handles and reports analysis errors
+
+**Key Features**:
+
+- **Test Data Processing**: Works with predefined test data files
+- **Service Orchestration**: Coordinates analysis and logging services
+- **Result Validation**: Validates and processes analysis results
+- **Comprehensive Logging**: Detailed logging for test operations
 
 ## Usage Examples
 
-### Basic Analysis
+### Application Startup Testing
+
+The test facade automatically executes tests when the application starts:
 
 ```java
-@Autowired
-private IOrganizationalAnalysisFacade analysisFacade;
-
-public void performAnalysis(String csvFilePath) {
-    try {
-        // Validate input
-        if (!analysisFacade.validateInputFile(csvFilePath)) {
-            throw new IllegalArgumentException("Invalid input file");
-        }
-        
-        // Perform analysis
-        AnalysisResult result = analysisFacade.analyzeOrganizationFromCsv(csvFilePath);
-        
-        // Process results
-        if (result.isSuccess()) {
-            displayResults(result);
-        } else {
-            handleError(result.getErrorMessage());
-        }
-        
-    } catch (Exception e) {
-         log.error("[Organization Analyzes] Analysis failed", e);
-        handleError(e.getMessage());
+@SpringBootApplication
+public class ExerciseApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ExerciseApplication.class, args);
+        // Test facades will automatically execute on ApplicationReadyEvent
     }
 }
 ```
 
-### Memory Estimation
+### Manual Local Testing
 
 ```java
-public void checkMemoryRequirements(String csvFilePath) {
-    long estimatedMemory = analysisFacade.estimateMemoryRequirements(csvFilePath);
+@Autowired
+private LocalTestFacade localTestFacade;
+
+public void performLocalTests() {
+    // Basic test analysis
+    localTestFacade.localTestAnalysis();
     
-    if (estimatedMemory > MAX_MEMORY_THRESHOLD) {
-        log.warn("[Organization Analyzes] Large file detected. Estimated memory: {} bytes", estimatedMemory);
-        // Implement memory management strategy
+    // Extended test analysis with large dataset
+    localTestFacade.localExtendedTestAnalysis();
+}
+```
+
+### Custom Test Scenarios
+
+```java
+@Service
+public class CustomTestService {
+    
+    @Autowired
+    private LocalTestFacade localTestFacade;
+    
+    public void runCustomTestScenario() {
+        // Perform local test analysis
+        localTestFacade.localTestAnalysis();
+        
+        // Additional custom test logic
+        performCustomValidations();
     }
 }
 ```
@@ -135,166 +182,154 @@ public void checkMemoryRequirements(String csvFilePath) {
 
 ### Facade Pattern
 
-The facade provides a simplified interface to a complex subsystem:
+The facade provides simplified interfaces for complex testing operations:
 
 ```java
-@Service
-public class DefaultOrganizationalAnalysisFacade implements IOrganizationalAnalysisFacade {
+@Facade
+public class DefaultLocalTestFacade implements LocalTestFacade {
     
     @Autowired
-    private ICsvReaderService csvReaderService;
+    private OrganizationalAnalysisLogging analysisLogging;
     
     @Autowired
-    private IOrganizationalAnalyzerService analyzerService;
+    private LocalTestService localTestService;
     
     @Override
-    public AnalysisResult analyzeOrganizationFromCsv(String csvFilePath) {
-        // Coordinate multiple services
-        List<Employee> employees = csvReaderService.readEmployeesFromCsv(csvFilePath);
-        return analyzerService.analyzeOrganizationalStructure(employees);
+    public void localTestAnalysis() {
+        LoggingUtil.logTestStartInfo();
+        
+        final String csvFilePath = "src/test/resources/test-data/employees.csv";
+        final AnalysisResult result = localTestService.analyzeOrganization(csvFilePath);
+        
+        if (!result.isSuccess()) {
+            analysisLogging.displayError("Local Analysis failed: " + result.getErrorMessage());
+        } else {
+            analysisLogging.displaySuccess("Local analysis completed successfully.");
+        }
     }
 }
 ```
 
-### Template Method Pattern
+### Event-Driven Architecture
 
-The facade can implement template methods for common operations:
+The facade implements event-driven patterns for application lifecycle management:
 
 ```java
-protected AnalysisResult performAnalysisTemplate(String csvFilePath) {
-    // 1. Validate input
-    validateInput(csvFilePath);
+@Facade
+public class DefaultTestFacade implements TestFacade {
     
-    // 2. Read data
-    List<Employee> employees = readData(csvFilePath);
+    @Autowired
+    private LocalTestFacade localTestFacade;
     
-    // 3. Perform analysis
-    AnalysisResult result = analyzeData(employees);
-    
-    // 4. Post-process results
-    return postProcessResults(result);
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
+        // Automatically execute tests when application is ready
+        localTestFacade.localTestAnalysis();
+        localTestFacade.localExtendedTestAnalysis();
+    }
 }
 ```
 
 ## Error Handling
 
-### Unified Error Strategy
+### Comprehensive Error Management
 
-The facade provides unified error handling across all services:
+The facade provides robust error handling for test operations:
 
 ```java
 @Override
-public AnalysisResult analyzeOrganizationFromCsv(String csvFilePath) {
+public void localTestAnalysis() {
+    LoggingUtil.logTestStartInfo();
+    
     try {
-        // Validate input
-        if (!validateInputFile(csvFilePath)) {
-            return AnalysisResult.failure("Invalid input file: " + csvFilePath);
+        final String csvFilePath = "src/test/resources/test-data/employees.csv";
+        final AnalysisResult result = localTestService.analyzeOrganization(csvFilePath);
+        
+        if (!result.isSuccess()) {
+            analysisLogging.displayError("Local Analysis failed: " + result.getErrorMessage());
+        } else {
+            analysisLogging.displaySuccess("Local analysis completed successfully.");
         }
-        
-        // Read data
-        List<Employee> employees = csvReaderService.readEmployeesFromCsv(csvFilePath);
-        
-        // Perform analysis
-        return analyzerService.analyzeOrganizationalStructure(employees);
-        
-    } catch (IOException e) {
-         log.error("[Organization Analyzes] File reading error", e);
-        return AnalysisResult.failure("Error reading file: " + e.getMessage());
     } catch (Exception e) {
-         log.error("[Organization Analyzes] Analysis error", e);
-        return AnalysisResult.failure("Analysis failed: " + e.getMessage());
+        log.error("Local test analysis failed", e);
+        analysisLogging.displayError("Unexpected error during local analysis: " + e.getMessage());
     }
 }
 ```
 
 ### Error Types
 
-- **Validation Errors**: Invalid input files or data
-- **Processing Errors**: Errors during data processing
 - **Analysis Errors**: Errors during organizational analysis
+- **File Processing Errors**: Errors reading or processing test data files
+- **Service Errors**: Errors from underlying services
 - **System Errors**: Unexpected system errors
 
-## Performance Optimization
+## Configuration
 
-### Caching Strategy
+### Facade Configuration
 
-The facade can implement caching for frequently accessed data:
+The facade components use Spring's annotation-driven configuration:
 
 ```java
-@Cacheable("employee-data")
-public List<Employee> readEmployeeData(String csvFilePath) {
-    return csvReaderService.readEmployeesFromCsv(csvFilePath);
+@Facade  // Custom annotation for facade components
+@Slf4j   // Lombok logging
+public class DefaultLocalTestFacade implements LocalTestFacade {
+    // Implementation
 }
 ```
 
-### Async Processing
+### Test Data Configuration
 
-For large datasets, the facade can support asynchronous processing:
+Test data files are configured for different scenarios:
 
-```java
-@Async
-public CompletableFuture<AnalysisResult> analyzeOrganizationAsync(String csvFilePath) {
-    return CompletableFuture.supplyAsync(() -> 
-        analyzeOrganizationFromCsv(csvFilePath)
-    );
-}
-```
-
-### Memory Management
-
-The facade can implement memory management strategies:
-
-```java
-public AnalysisResult analyzeWithMemoryManagement(String csvFilePath) {
-    long estimatedMemory = estimateMemoryRequirements(csvFilePath);
-    
-    if (estimatedMemory > availableMemory) {
-        // Implement batch processing or streaming
-        return analyzeInBatches(csvFilePath);
-    } else {
-        return analyzeOrganizationFromCsv(csvFilePath);
-    }
-}
-```
+- `src/test/resources/test-data/employees.csv` - Basic test data
+- `src/test/resources/test-data/large-employees.csv` - Extended test data for performance testing
 
 ## Testing
 
 ### Facade Testing
 
-Facade tests focus on integration and orchestration:
+Facade tests focus on integration and event handling:
 
 ```java
 @ExtendWith(MockitoExtension.class)
-class DefaultOrganizationalAnalysisFacadeTest {
+class DefaultLocalTestFacadeTest {
     
     @Mock
-    private ICsvReaderService csvReaderService;
+    private OrganizationalAnalysisLogging analysisLogging;
     
     @Mock
-    private IOrganizationalAnalyzerService analyzerService;
+    private LocalTestService localTestService;
     
     @InjectMocks
-    private DefaultOrganizationalAnalysisFacade facade;
+    private DefaultLocalTestFacade facade;
     
     @Test
-    void testAnalyzeOrganizationFromCsv_Success() {
+    void testLocalTestAnalysis_Success() {
         // Given
-        String csvFilePath = "test.csv";
-        List<Employee> employees = createTestEmployees();
-        AnalysisResult expectedResult = AnalysisResult.success();
-        
-        when(csvReaderService.readEmployeesFromCsv(csvFilePath))
-            .thenReturn(employees);
-        when(analyzerService.analyzeOrganizationalStructure(employees))
-            .thenReturn(expectedResult);
+        AnalysisResult successResult = AnalysisResult.success();
+        when(localTestService.analyzeOrganization(anyString()))
+            .thenReturn(successResult);
         
         // When
-        AnalysisResult result = facade.analyzeOrganizationFromCsv(csvFilePath);
+        facade.localTestAnalysis();
         
         // Then
-        assertTrue(result.isSuccess());
-        verify(csvReaderService).readEmployeesFromCsv(csvFilePath);
-        verify(analyzerService).analyzeOrganizationalStructure(employees);
+        verify(analysisLogging).displaySuccess(contains("completed successfully"));
+    }
+    
+    @Test
+    void testLocalTestAnalysis_Failure() {
+        // Given
+        AnalysisResult failureResult = AnalysisResult.failure("Test error");
+        when(localTestService.analyzeOrganization(anyString()))
+            .thenReturn(failureResult);
+        
+        // When
+        facade.localTestAnalysis();
+        
+        // Then
+        verify(analysisLogging).displayError(contains("failed"));
     }
 }
 ```
@@ -305,66 +340,58 @@ Integration tests verify the facade works with real services:
 
 ```java
 @SpringBootTest
-class OrganizationalAnalysisFacadeIntegrationTest {
+class LocalTestFacadeIntegrationTest {
     
     @Autowired
-    private IOrganizationalAnalysisFacade facade;
+    private LocalTestFacade localTestFacade;
     
     @Test
-    void testFullAnalysisWorkflow() {
-        // Given
-        String csvFilePath = "src/test/resources/test-data/employees.csv";
-        
+    void testLocalTestAnalysis_Integration() {
         // When
-        AnalysisResult result = facade.analyzeOrganizationFromCsv(csvFilePath);
+        localTestFacade.localTestAnalysis();
         
-        // Then
-        assertTrue(result.isSuccess());
-        assertNotNull(result.getOrganizationalSummary());
+        // Then - verify no exceptions are thrown
+        // and analysis completes successfully
     }
 }
 ```
 
-## Configuration
-
-### Facade Configuration
-
-The facade can be configured through application properties:
-
-```properties
-# Facade Configuration
-app.facade.cache-enabled=true
-app.facade.async-processing-enabled=true
-app.facade.batch-size=1000
-app.facade.memory-threshold=100MB
-```
-
-### Performance Tuning
-
-```properties
-# Performance Configuration
-app.facade.thread-pool-size=4
-app.facade.max-concurrent-operations=10
-app.facade.timeout-seconds=300
-```
-
 ## Best Practices
 
-1. **Single Responsibility**: Each facade method has one clear purpose
-2. **Error Handling**: Comprehensive error handling with meaningful messages
-3. **Performance**: Optimize for large datasets and memory efficiency
-4. **Caching**: Implement appropriate caching strategies
-5. **Monitoring**: Add performance monitoring and metrics
-6. **Testing**: High test coverage for integration scenarios
-7. **Documentation**: Clear documentation for all public methods
+1. **Event-Driven Design**: Use Spring events for lifecycle management
+2. **Service Integration**: Coordinate with underlying services effectively
+3. **Error Handling**: Comprehensive error handling with meaningful messages
+4. **Logging**: Detailed logging for debugging and monitoring
+5. **Testing**: High test coverage for integration scenarios
+6. **Documentation**: Clear documentation for all public methods
+7. **Separation of Concerns**: Clear separation between test and business logic
 
 ## Future Enhancements
 
 Potential improvements for the facade layer:
 
-1. **Circuit Breaker**: Implement circuit breaker pattern for resilience
-2. **Retry Logic**: Add retry mechanisms for transient failures
-3. **Metrics**: Enhanced performance metrics and monitoring
-4. **Caching**: More sophisticated caching strategies
-5. **Async Processing**: Enhanced async processing capabilities
-6. **Validation**: Advanced input validation and sanitization
+1. **Additional Test Scenarios**: More comprehensive test scenarios
+2. **Performance Testing**: Enhanced performance testing capabilities
+3. **Mock Data Generation**: Dynamic test data generation
+4. **Test Reporting**: Enhanced test result reporting
+5. **Configuration Management**: More flexible test configuration
+6. **Async Testing**: Asynchronous test execution capabilities
+7. **Test Metrics**: Performance metrics for test operations
+
+## Integration with Core Components
+
+The facade layer integrates with:
+
+- **Core Models**: Uses `AnalysisResult` and other core models
+- **Core Utilities**: Integrates with `LoggingUtil` and validation utilities
+- **Service Layer**: Coordinates with analysis, logging, and test services
+- **Configuration**: Uses custom annotations for configuration
+
+## Monitoring and Observability
+
+The facade provides comprehensive monitoring:
+
+- **Application Lifecycle Events**: Automatic event handling and logging
+- **Test Execution Monitoring**: Detailed logging of test operations
+- **Error Tracking**: Comprehensive error reporting and logging
+- **Performance Metrics**: Basic performance monitoring for test operations
