@@ -74,7 +74,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
                     }
                     
                 } catch (Exception e) {
-                     log.error("\n [Organization Analyzes] Error processing line {}: {}", lineNumber.get(), e.getMessage());
+                     log.error("[Organization Analyzes] Error processing line {}: {}", lineNumber.get(), e.getMessage());
                     errorCount.incrementAndGet();
                     
                     // Continue processing other lines unless too many errors
@@ -124,7 +124,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
             Path path = Paths.get(filePath);
             return Files.lines(path).count();
         } catch (IOException e) {
-             log.error("\n [Organization Analyzes] Error counting lines in CSV file: {}", e.getMessage());
+             log.error("[Organization Analyzes] Error counting lines in CSV file: {}", e.getMessage());
             throw e;
         }
     }
@@ -155,7 +155,7 @@ public class DefaultCsvReaderService implements ICsvReaderService {
             
             return true;
         } catch (IOException e) {
-             log.error("\n [Organization Analyzes] Error validating file size: {}", e.getMessage());
+             log.error("[Organization Analyzes] Error validating file size: {}", e.getMessage());
             return false;
         }
     }

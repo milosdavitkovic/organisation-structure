@@ -62,7 +62,7 @@ public interface IOrganizationalAnalysisFacade {
     /**
      * Performs analysis on existing employee data
      */
-    AnalysisResult analyzeEmployeeData(List<Employee> employees);
+    AnalysisResult analyzeEmployeeData(@NonNull final List<Employee> employees);
 }
 ```
 
@@ -112,7 +112,7 @@ public void performAnalysis(String csvFilePath) {
         }
         
     } catch (Exception e) {
-         log.error("\n [Organization Analyzes] Analysis failed", e);
+         log.error("[Organization Analyzes] Analysis failed", e);
         handleError(e.getMessage());
     }
 }
@@ -198,10 +198,10 @@ public AnalysisResult analyzeOrganizationFromCsv(String csvFilePath) {
         return analyzerService.analyzeOrganizationalStructure(employees);
         
     } catch (IOException e) {
-         log.error("\n [Organization Analyzes] File reading error", e);
+         log.error("[Organization Analyzes] File reading error", e);
         return AnalysisResult.failure("Error reading file: " + e.getMessage());
     } catch (Exception e) {
-         log.error("\n [Organization Analyzes] Analysis error", e);
+         log.error("[Organization Analyzes] Analysis error", e);
         return AnalysisResult.failure("Analysis failed: " + e.getMessage());
     }
 }

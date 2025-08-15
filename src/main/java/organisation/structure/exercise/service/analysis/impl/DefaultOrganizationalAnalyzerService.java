@@ -7,6 +7,7 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,20 +32,20 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
     private ICsvReaderService csvReaderService;
     
     @Override
-    public AnalysisResult analyzeOrganizationalStructure(List<Employee> employees) {
+    public AnalysisResult analyzeOrganizationalStructure(@NonNull final List<Employee> employees) {
          log.info("[Organization Analyzes] Starting organizational structure analysis for {} employees", employees.size());
         
         try {
             // Validate input data
             if (!EmployeeValidationUtil.validateEmployees(employees)) {
-                 log.error("\n [Organization Analyzes] Employee validation failed");
+                 log.error("[Organization Analyzes] Employee validation failed");
                 return AnalysisResult.failure("Employee validation failed");
             }
             
             // Build organizational hierarchy
             List<Employee> hierarchyEmployees = buildOrganizationalHierarchy(employees);
             if (hierarchyEmployees.isEmpty()) {
-                 log.error("\n [Organization Analyzes] Failed to build organizational hierarchy");
+                 log.error("[Organization Analyzes] Failed to build organizational hierarchy");
                 return AnalysisResult.failure("Failed to build organizational hierarchy");
             }
             
@@ -68,13 +69,13 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
                     longReportingLines);
                     
         } catch (Exception e) {
-             log.error("\n [Organization Analyzes] Error during organizational analysis: {}", e.getMessage(), e);
+             log.error("[Organization Analyzes] Error during organizational analysis: {}", e.getMessage(), e);
             return AnalysisResult.failure("Error during organizational analysis: " + e.getMessage());
         }
     }
     
     @Override
-    public List<Employee> buildOrganizationalHierarchy(List<Employee> employees) {
+    public List<Employee> buildOrganizationalHierarchy(@NonNull final List<Employee> employees) {
         log.debug("[Organization Analyzes] Building organizational hierarchy for {} employees", employees.size());
         
         // Create employee lookup map for O(1) access
@@ -88,7 +89,7 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
                 .orElse(null);
         
         if (ceo == null) {
-             log.error("\n [Organization Analyzes] No CEO found in the organization");
+             log.error("[Organization Analyzes] No CEO found in the organization");
             return new ArrayList<>();
         }
         
@@ -111,7 +112,7 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
     }
     
     @Override
-    public void calculateReportingLevels(List<Employee> employees) {
+    public void calculateReportingLevels(@NonNull final List<Employee> employees) {
         log.debug("[Organization Analyzes] Calculating reporting levels for {} employees", employees.size());
         
         Employee ceo = employees.stream()
@@ -120,7 +121,7 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
                 .orElse(null);
         
         if (ceo == null) {
-             log.error("\n [Organization Analyzes] No CEO found for reporting level calculation");
+             log.error("[Organization Analyzes] No CEO found for reporting level calculation");
             return;
         }
         
@@ -128,7 +129,7 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
     }
     
     @Override
-    public AnalysisResult analyzeManagerSalaries(List<Employee> employees) {
+    public AnalysisResult analyzeManagerSalaries(@NonNull final List<Employee> employees) {
         log.debug("[Organization Analyzes] Analyzing manager salaries for {} employees", employees.size());
         
         List<Employee> underpaidManagers = employees.stream()
@@ -148,7 +149,7 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
     }
     
     @Override
-    public List<Employee> findEmployeesWithLongReportingLines(List<Employee> employees) {
+    public List<Employee> findEmployeesWithLongReportingLines(@NonNull final List<Employee> employees) {
         log.debug("[Organization Analyzes] Finding employees with long reporting lines for {} employees", employees.size());
         
         List<Employee> employeesWithLongReportingLines = employees.stream()
@@ -162,7 +163,7 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
     }
     
     @Override
-    public OrganizationalSummary generateOrganizationalSummary(List<Employee> employees) {
+    public OrganizationalSummary generateOrganizationalSummary(@NonNull final List<Employee> employees) {
         log.debug("[Organization Analyzes] Generating organizational summary for {} employees", employees.size());
         
         Employee ceo = employees.stream()
@@ -171,7 +172,7 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
                 .orElse(null);
         
         if (ceo == null) {
-             log.error("\n [Organization Analyzes] No CEO found in the organization");
+             log.error("[Organization Analyzes] No CEO found in the organization");
             return null;
         }
         
@@ -273,7 +274,7 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
         try {
             // Validate input file
             if (!validateInputFile(csvFilePath)) {
-                 log.error("\n [Organization Analyzes] Input file validation failed: {}", csvFilePath);
+                 log.error("[Organization Analyzes] Input file validation failed: {}", csvFilePath);
                 return AnalysisResult.failure("Invalid input file: " + csvFilePath);
             }
 
@@ -287,13 +288,13 @@ public class DefaultOrganizationalAnalyzerService implements OrganizationalAnaly
             if (result.isSuccess()) {
                 log.debug("[Organization Analyzes] Organizational analysis completed successfully");
             } else {
-                 log.error("\n [Organization Analyzes] Organizational analysis failed: {}", result.getErrorMessage());
+                 log.error("[Organization Analyzes] Organizational analysis failed: {}", result.getErrorMessage());
             }
 
             return result;
 
         } catch (Exception e) {
-             log.error("\n [Organization Analyzes] Error during organizational analysis: {}", e.getMessage(), e);
+             log.error("[Organization Analyzes] Error during organizational analysis: {}", e.getMessage(), e);
             return AnalysisResult.failure("Error during analysis: " + e.getMessage());
         }
     }

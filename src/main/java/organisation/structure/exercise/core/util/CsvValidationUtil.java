@@ -81,7 +81,7 @@ public class CsvValidationUtil {
                 return false;
             }
         } catch (IOException e) {
-             log.error("\n [Organization Analyzes] Error reading CSV header: {}", e.getMessage());
+             log.error("[Organization Analyzes] Error reading CSV header: {}", e.getMessage());
             return false;
         }
     }
@@ -99,7 +99,7 @@ public class CsvValidationUtil {
                     .filter(line -> !line.trim().isEmpty())
                     .allMatch(CsvValidationUtil::isValidCsvLine);
         } catch (IOException e) {
-             log.error("\n [Organization Analyzes] Error validating CSV content: {}", e.getMessage());
+             log.error("[Organization Analyzes] Error validating CSV content: {}", e.getMessage());
             return false;
         }
     }
@@ -169,7 +169,7 @@ public class CsvValidationUtil {
                     .filter(line -> !line.trim().isEmpty())
                     .count();
         } catch (IOException e) {
-             log.error("\n [Organization Analyzes] Error estimating employee count: {}", e.getMessage());
+             log.error("[Organization Analyzes] Error estimating employee count: {}", e.getMessage());
             return 0;
         }
     }
@@ -186,7 +186,7 @@ public class CsvValidationUtil {
             // Rough estimate: 1KB per employee for Employee object + overhead
             return lineCount * 1024;
         } catch (Exception e) {
-             log.error("\n [Organization Analyzes] Error estimating memory requirements: {}", e.getMessage());
+             log.error("[Organization Analyzes] Error estimating memory requirements: {}", e.getMessage());
             return 0;
         }
     }

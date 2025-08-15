@@ -125,7 +125,7 @@ All services implement comprehensive error handling:
 try {
     // Service operation
 } catch (SpecificException e) {
-     log.error("\n [Organization Analyzes] Operation failed: {}", e.getMessage(), e);
+     log.error("[Organization Analyzes] Operation failed: {}", e.getMessage(), e);
     throw new ServiceException("User-friendly message", e);
 }
 ```

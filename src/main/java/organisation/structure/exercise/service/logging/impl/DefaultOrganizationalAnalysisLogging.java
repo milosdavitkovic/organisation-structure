@@ -1,11 +1,15 @@
 package organisation.structure.exercise.service.logging.impl;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import organisation.structure.exercise.core.model.AnalysisResult;
+import organisation.structure.exercise.core.model.Employee;
 import organisation.structure.exercise.core.model.OrganizationalSummary;
 import organisation.structure.exercise.core.util.LoggingUtil;
 import organisation.structure.exercise.service.logging.OrganizationalAnalysisLogging;
+
+import java.util.List;
 
 /**
  * Console-based view implementation for organizational analysis.
@@ -18,7 +22,7 @@ public class DefaultOrganizationalAnalysisLogging implements OrganizationalAnaly
     @Override
     public void displayAnalysisResults(AnalysisResult result) {
         if (result.isSuccess()) {
-            log.debug("[Organization Analyzes] === ANALYSIS COMPLETED SUCCESSFULLY ===");
+            displaySuccess("[Organization Analyzes] === ANALYSIS COMPLETED SUCCESSFULLY ===");
 
             if (result.getOrganizationalSummary() != null) {
                 displayOrganizationalSummary(result.getOrganizationalSummary());
@@ -50,52 +54,59 @@ public class DefaultOrganizationalAnalysisLogging implements OrganizationalAnaly
         log.info("[Organization Analyzes] Total Employees: [{}]", summary.getTotalEmployees());
         log.info("[Organization Analyzes] Managers: [{}]", summary.getManagers());
         log.info("[Organization Analyzes] Individual Contributors: [{}]", summary.getIndividualContributors());
-        log.info("[Organization Analyzes] Total Salary Budget: {}", summary.getTotalSalaryBudget());
-        log.info("[Organization Analyzes] Average Salary: {}", summary.getAverageSalary());
+        double totalSalaryBudget = summary.getTotalSalaryBudget();
+        log.info("[Organization Analyzes] Total Salary Budget: {}", LoggingUtil.logSwissFrankValue(totalSalaryBudget));
+        double averageSalary = summary.getAverageSalary();
+        log.info("[Organization Analyzes] Average Salary: {}", LoggingUtil.logSwissFrankValue(averageSalary));
     }
 
     @Override
     public void displayError(String errorMessage) {
-        log.error("\n [Organization Analyzes] ERROR: " + errorMessage);
+        log.error("[Organization Analyzes] ERROR: {}", errorMessage);
     }
 
     @Override
     public void displaySuccess(String message) {
-        log.info("[Organization Analyzes] SUCCESS: " + message);
+        log.info("--------------------------------------------");
+        log.info("[Organization Analyzes] {}", message);
+        log.info("--------------------------------------------");
     }
 
     @Override
     public void displayInfo(String message) {
-        log.info("[Organization Analyzes] INFO: {}", message);
+        log.info("[Organization Analyzes] {}", message);
     }
 
 
-    private void displayUnderpaidManagers(java.util.List<organisation.structure.exercise.core.model.Employee> managers) {
+    private void displayUnderpaidManagers(@NonNull final List<Employee> managers) {
         log.info("--------------------------------------------------------");
         log.info("[Organization Analyzes]  === MANAGER SALARY ANALYSIS ===");
         log.info("[Organization Analyzes] ⚠ UNDERPAID MANAGERS:");
-        for (organisation.structure.exercise.core.model.Employee manager : managers) {
+        for (Employee manager : managers) {
             double underpayment = manager.getUnderpaymentAmount();
             log.info("[Organization Analyzes] [{}] (ID: [{}]): Underpaid by {}",
-                    manager.getFullName(), manager.getId(), LoggingUtil.logDollarValue(underpayment));
+                    manager.getFullName(), manager.getId(), LoggingUtil.logSwissFrankValue(underpayment));
         }
     }
 
-    private void displayOverpaidManagers(java.util.List<organisation.structure.exercise.core.model.Employee> managers) {
+    private void displayOverpaidManagers(@NonNull final List<Employee> managers) {
+        log.info("--------------------------------------------");
         log.info("[Organization Analyzes] ⚠ OVERPAID MANAGERS:");
-        for (organisation.structure.exercise.core.model.Employee manager : managers) {
+        for (Employee manager : managers) {
             double overpayment = manager.getOverpaymentAmount();
             log.info("[Organization Analyzes] [{}] (ID: [{}]): Overpaid by {}",
-                    manager.getFullName(), manager.getId(), LoggingUtil.logDollarValue(overpayment));
+                    manager.getFullName(), manager.getId(), LoggingUtil.logSwissFrankValue(overpayment));
         }
     }
 
-    private void displayLongReportingLines(java.util.List<organisation.structure.exercise.core.model.Employee> employees) {
-        log.info("[Organization Analyzes]  === REPORTING LINE ANALYSIS ===");
+    private void displayLongReportingLines(@NonNull final List<Employee> employees) {
+        log.info("-------------------------------------------------------");
+        log.info("[Organization Analyzes] === REPORTING LINE ANALYSIS ===");
         log.info("[Organization Analyzes] ⚠ EMPLOYEES WITH TOO LONG REPORTING LINES:");
-        for (organisation.structure.exercise.core.model.Employee employee : employees) {
+        for (Employee employee : employees) {
             int excessLevels = employee.getExcessReportingLevels();
-            log.info("[Organization Analyzes] [{}] (ID: [{}]): [{}] levels too deep (Level [{}]). ",
+            log.info("[Organization Analyzes] Employee: [{}] (ID: [{}]) is [{}] levels too deep in organization hierarchy (Employee Level: [{}]). " +
+                            "Company wants to avoid too long reporting lines, and this employee has more than 4 managers between them and the CEO, which is not allowed.",
                     employee.getFullName(), employee.getId(),
                     excessLevels, employee.getReportingLevel());
         }

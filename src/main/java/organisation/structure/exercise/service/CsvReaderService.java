@@ -42,7 +42,7 @@ public class CsvReaderService implements ICsvReaderService {
         try {
             String[] parts = line.split(",");
             if (parts.length < 4) {
-                 log.error("\n [Organization Analyzes] an Invalid line format: {}", line);
+                 log.error("[Organization Analyzes] an Invalid line format: {}", line);
                 return null;
             }
             
@@ -58,7 +58,7 @@ public class CsvReaderService implements ICsvReaderService {
             
             return new Employee(id, firstName, lastName, salary, managerId);
         } catch (NumberFormatException e) {
-             log.error("\n [Organization Analyzes] Error parsing salary in line: {}", line);
+             log.error("[Organization Analyzes] Error parsing salary in line: {}", line);
             return null;
         }
     }
